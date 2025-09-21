@@ -12,11 +12,17 @@ const io=new Server(server)
 io.on("connection",(socket)=>{
     console.log(`new user ${socket.id} connected`)
 
-    socket.on('chat message',({id,msg})=>{
-        // console.log('message : ',msg)
-        // console.log('id : ',id)
-        io.to(id).emit('chat message',{id,msg})
+    socket.on('chat message',({room,msg})=>{
+        console.log('message : ',msg)
+        console.log('room : ',room)
+        socket.to(room).emit('chat message',{room,msg})
         // io.emit('chat message',msg)
+        socket.emit('chat message',{room,msg})
+    })
+
+    socket.on('join-Room',(room)=>{
+        console.log('user join ',room)
+        socket.join(room)
     })
 
     socket.emit('myRoom-id',socket.id)

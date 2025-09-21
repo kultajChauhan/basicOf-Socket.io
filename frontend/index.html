@@ -74,6 +74,12 @@
         <button>Send</button>
     </form>
 
+    <form id='joinForm' action="">
+        <label for="input">Room</label>
+        <input id="input" placeholder="room" autocomplete="off" />
+        <button>join</button>
+    </form>
+
     <script src="/socket.io/socket.io.js"></script>
 <script>
   const socket = io();
@@ -84,21 +90,33 @@
   const messages=document.getElementById('messages')
   const room=document.getElementById('room')
   const id=document.getElementById('id')
+  const joinForm=document.getElementById('joinForm')
 
   form.addEventListener('submit',(e)=>{
     e.preventDefault()
     if(input.value){
-        socket.emit('chat message',{id:room.value,msg:input.value})
+        socket.emit('chat message',{room:room.value,msg:input.value})
         input.value=''
     }
   })
 
-  socket.on('chat message',({id,msg})=>{
+  joinForm.addEventListener('submit',(e)=>{
+    e.preventDefault()
+    console.log("hello join form")
+    console.log(e.target.input.value)
+    if(e.target.input.value){
+        socket.emit('join-Room',e.target.input.value)
+        console.log(e.target.input.value)
+        e.target.input.value=''
+    }
+  })
+
+  socket.on('chat message',({room,msg})=>{
    const li = document.createElement("li")
    li.textContent=msg
    messages.appendChild(li)
    window.scrollTo(0, document.body.scrollHeight);
-   console.log(`${msg} from ${id}`)
+   console.log(`${msg} from room ${room}`)
   })
 
   socket.on("myRoom-id",(msg)=>{
