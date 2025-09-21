@@ -14,27 +14,28 @@
         #form {
             background: rgba(0, 0, 0, 0.15);
             padding: 0.25rem;
-            position: fixed;
+            /* position: fixed; */
             bottom: 0;
             left: 0;
             right: 0;
-            display: flex;
-            height: 3rem;
+            /* display: flex; */
+            /* height: 3rem; */
             box-sizing: border-box;
             backdrop-filter: blur(10px);
         }
 
-        #input {
+        input {
             border: none;
             padding: 0 1rem;
             flex-grow: 1;
             border-radius: 2rem;
             margin: 0.25rem;
+            
         }
 
-        #input:focus {
+        /* #input:focus {
             outline: none;
-        }
+        } */
 
         #form>button {
             background: #333;
@@ -64,35 +65,50 @@
 
 <body>
     <ul id="messages"></ul>
+    <div id="id"></div>
     <form id="form" action="">
-        <input id="input" autocomplete="off" />
+        <label for="input">message</label>
+        <input id="input" placeholder="message" autocomplete="off" />
+        <label for="room">room</label>
+        <input id='room' name="room" placeholder="room" type="text">
         <button>Send</button>
     </form>
 
     <script src="/socket.io/socket.io.js"></script>
 <script>
   const socket = io();
-  console.log(io())
+  console.log(socket)
 
   const form=document.getElementById('form')
   const input=document.getElementById('input')
   const messages=document.getElementById('messages')
+  const room=document.getElementById('room')
+  const id=document.getElementById('id')
 
   form.addEventListener('submit',(e)=>{
     e.preventDefault()
     if(input.value){
-        socket.emit('chat message',input.value)
+        socket.emit('chat message',{id:room.value,msg:input.value})
         input.value=''
     }
   })
 
-  socket.on('chat message',(msg)=>{
+  socket.on('chat message',({id,msg})=>{
    const li = document.createElement("li")
    li.textContent=msg
    messages.appendChild(li)
    window.scrollTo(0, document.body.scrollHeight);
-   console.log(`${msg} from ${socket.id}`)
+   console.log(`${msg} from ${id}`)
   })
+
+  socket.on("myRoom-id",(msg)=>{
+    console.log(msg)
+    let li=document.createElement("li")
+    li.textContent=msg
+    id.appendChild(li)
+  })
+
+
 </script>
 </body>
 

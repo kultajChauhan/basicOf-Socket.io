@@ -11,10 +11,20 @@ const io=new Server(server)
 
 io.on("connection",(socket)=>{
     console.log(`new user ${socket.id} connected`)
-    socket.on('chat message',(msg)=>{
-        console.log('message : ',msg)
-        io.emit('chat message',msg)
+
+    socket.on('chat message',({id,msg})=>{
+        // console.log('message : ',msg)
+        // console.log('id : ',id)
+        io.to(id).emit('chat message',{id,msg})
+        // io.emit('chat message',msg)
     })
+
+    socket.emit('myRoom-id',socket.id)
+
+     socket.on("disconnect", () => {
+    console.log(`user ${socket.id} disconnected`);
+  });
+
 })
 
 app.get('/',(req,res)=>{
